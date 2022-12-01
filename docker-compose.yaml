@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+  goapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "1323:1323"

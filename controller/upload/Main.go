@@ -1,0 +1,54 @@
+package upload
+
+import (
+	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
+	"io"
+	"net/http"
+	"os"
+	"rest-go/controller/Boleto"
+)
+
+func Upload(c echo.Context) error {
+
+	// Source
+	file, err := c.FormFile("file")
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, `File not found`)
+	}
+
+	// Verify file is PDF
+	if file.Header.Get("Content-Type") != "application/pdf" {
+		return c.String(http.StatusBadRequest, "File is not a PDF")
+	}
+
+	// Open source file
+	src, err := file.Open()
+	if err != nil {
+		return err
+	}
+	defer src.Close()
+
+	// Create id to file
+	id := uuid.New().String()
+
+	// Create destination file
+	dst, err := os.OpenFile("tmp/"+id+".pdf", os.O_WRONLY|os.O_CREATE, 0777)
+	if err != nil {
+		return err
+	}
+	defer dst.Close()
+
+	// Copy source file to destination file
+	if _, err = io.Copy(dst, src); err != nil {
+		return err
+	}
+
+	// Read boleto
+	boleto, err := Boleto.ReadBoleto(id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, boleto)
+}
