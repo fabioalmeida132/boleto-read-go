@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"rest-go/controller/Boleto"
+	"rest-go/controller/OCR"
 )
 
 func Upload(c echo.Context) error {
@@ -44,11 +45,20 @@ func Upload(c echo.Context) error {
 		return err
 	}
 
+	// Read OCR
+	var barCode = ""
+	barCode, err = OCR.ExtractBarCode("tmp/"+id+".pdf", id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+
 	// Read boleto
 	boleto, err := Boleto.ReadBoleto(id)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
+	// Return boleto with barCode
+	boleto.BarCode = barCode
 	return c.JSON(http.StatusOK, boleto)
 }

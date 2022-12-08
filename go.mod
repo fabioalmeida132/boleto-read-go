@@ -5,7 +5,9 @@ go 1.19
 require (
 	code.sajari.com/docconv v1.3.5
 	github.com/google/uuid v1.3.0
+	github.com/karmdip-mi/go-fitz v0.0.0-20210702102225-a530a79566e9
 	github.com/labstack/echo/v4 v4.9.1
+	gopkg.in/bieber/barcode.v0 v0.0.0-20150426000244-ea9099fd9d91
 )
 
 require (
