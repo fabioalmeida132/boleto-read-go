@@ -47,18 +47,29 @@ func Upload(c echo.Context) error {
 
 	// Read OCR
 	var barCode = ""
-	barCode, err = OCR.ExtractBarCode("tmp/"+id+".pdf", id)
+	barCode, err = OCR.ExtractBarCode("tmp/"+id+".pdf", id, c.FormValue("password"))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	// Read boleto
-	boleto, err := Boleto.ReadBoleto(id)
+	boleto, err := Boleto.ReadBoleto("tmp/" + id + ".pdf")
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
 	// Return boleto with barCode
 	boleto.BarCode = barCode
+
+	var finds []string
+	if boleto.TypeableLine != "" {
+		finds = append(finds, "typeableLine")
+	}
+	if boleto.BarCode != "" {
+		finds = append(finds, "barCode")
+	}
+
+	boleto.FindTypes = finds
+
 	return c.JSON(http.StatusOK, boleto)
 }
