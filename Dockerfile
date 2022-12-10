@@ -1,5 +1,4 @@
-FROM ubuntu:latest
-
+FROM ubuntu:latest as builder
 
 RUN apt-get update
 RUN apt-get install -y wget git gcc
@@ -22,20 +21,7 @@ RUN go mod tidy
 
 RUN go build -o /main
 
+# copy to scratch image
+FROM scratch
+COPY --from=builder /main /main
 CMD [ "/main" ]
-
-#FROM golang:alpine
-#
-#WORKDIR /app
-#
-#COPY . ./
-#RUN apk add --no-cache git gcc musl-dev
-#RUN apk add poppler-utils
-#RUN apk add zbar-dev
-#RUN go mod download
-#RUN go build -tags musl -o /main
-#
-#
-#EXPOSE 1323
-#
-#CMD [ "/main" ]

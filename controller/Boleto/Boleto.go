@@ -18,6 +18,7 @@ func ReadBoleto(file *multipart.FileHeader, password string) (models.Boleto, err
 	if err != nil {
 		return models.Boleto{}, err
 	}
+	defer src.Close()
 
 	var typeableLine = ""
 	if password != "" {
@@ -28,6 +29,7 @@ func ReadBoleto(file *multipart.FileHeader, password string) (models.Boleto, err
 		newFile := api.Decrypt(src, buf, conf)
 		if newFile == nil {
 			doc, err := fitz.NewFromMemory(buf.Bytes())
+			defer doc.Close()
 			if err != nil {
 				return models.Boleto{}, errors.New("File needs a password")
 			}
@@ -45,6 +47,7 @@ func ReadBoleto(file *multipart.FileHeader, password string) (models.Boleto, err
 	if err != nil {
 		return models.Boleto{}, err
 	}
+	defer doc.Close()
 
 	typeableLine, err = GetTypeableLine(doc)
 	if err != nil {

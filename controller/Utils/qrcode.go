@@ -1,4 +1,4 @@
-package OCR
+package Utils
 
 // #cgo darwin pkg-config: zbar
 // #cgo LDFLAGS: -lzbar

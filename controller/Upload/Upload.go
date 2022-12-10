@@ -1,4 +1,4 @@
-package upload
+package Upload
 
 import (
 	"github.com/labstack/echo/v4"
@@ -23,7 +23,7 @@ func Upload(c echo.Context) error {
 	// Open source file
 	src, err := file.Open()
 	if err != nil {
-		return err
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	defer src.Close()
 
@@ -38,7 +38,7 @@ func Upload(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	//
+
 	// Return boleto with barCode
 	boleto.BarCode = barCode
 

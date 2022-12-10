@@ -1,4 +1,4 @@
-package OCR
+package Utils
 
 // #cgo LDFLAGS: -lzbar
 // #include <zbar.h>
