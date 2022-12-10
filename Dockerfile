@@ -1,4 +1,4 @@
-FROM ubuntu:latest as builder
+FROM ubuntu:latest
 
 RUN apt-get update
 RUN apt-get install -y wget git gcc
@@ -21,7 +21,4 @@ RUN go mod tidy
 
 RUN go build -o /main
 
-# copy to scratch image
-FROM scratch
-COPY --from=builder /main /main
 CMD [ "/main" ]
