@@ -66,16 +66,14 @@ func ExtractBarCode(file *multipart.FileHeader, password string) (string, error)
 func GetBarCode(doc *fitz.Document) (string, error) {
 	var findCode = ""
 	for n := 0; n < doc.NumPage(); n++ {
-		img, err := doc.Image(n)
+		img, _ := doc.Image(n)
 
-		results, err := Utils.GetDataFromImage(img)
-		if err != nil {
-			return "", errors.New("Error to extract barcode")
-		}
-
+		results, _ := Utils.GetDataFromImage(img)
 		for _, result := range results {
-			findCode = result
-			break
+			if len(result) == 44 {
+				findCode = result
+				break
+			}
 		}
 
 		if findCode != "" {

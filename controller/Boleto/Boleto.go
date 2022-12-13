@@ -8,15 +8,14 @@ import (
 	"github.com/pkg/errors"
 	"mime/multipart"
 	"regexp"
-	"rest-go/models"
 )
 
-func ReadBoleto(file *multipart.FileHeader, password string) (models.Boleto, error) {
+func ReadBoleto(file *multipart.FileHeader, password string) (string, error) {
 
 	// Open source file
 	src, err := file.Open()
 	if err != nil {
-		return models.Boleto{}, err
+		return "", err
 	}
 	defer src.Close()
 
@@ -31,30 +30,30 @@ func ReadBoleto(file *multipart.FileHeader, password string) (models.Boleto, err
 			doc, err := fitz.NewFromMemory(buf.Bytes())
 			defer doc.Close()
 			if err != nil {
-				return models.Boleto{}, errors.New("File needs a password")
+				return "", errors.New("File needs a password")
 			}
 			typeableLine, err = GetTypeableLine(doc)
 			if err != nil {
-				return models.Boleto{}, err
+				return "", err
 			}
-			return models.Boleto{TypeableLine: typeableLine}, nil
+			return typeableLine, nil
 		}
 
-		return models.Boleto{}, errors.New("File needs a correct password")
+		return "", errors.New("File needs a correct password")
 	}
 
 	doc, err := fitz.NewFromReader(src)
 	if err != nil {
-		return models.Boleto{}, err
+		return "", err
 	}
 	defer doc.Close()
 
 	typeableLine, err = GetTypeableLine(doc)
 	if err != nil {
-		return models.Boleto{}, err
+		return "", err
 	}
 
-	return models.Boleto{TypeableLine: typeableLine}, nil
+	return typeableLine, nil
 }
 
 func GetTypeableLine(doc *fitz.Document) (string, error) {
