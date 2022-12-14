@@ -14,6 +14,7 @@ func main() {
 	}
 
 	e := echo.New()
+	e.Use(middleware.CORS())
 
 	e.POST("/upload", Upload.Upload)
 	e.Logger.Fatal(e.Start(":" + port))
