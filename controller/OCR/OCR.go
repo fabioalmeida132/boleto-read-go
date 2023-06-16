@@ -3,12 +3,13 @@ package OCR
 import (
 	"C"
 	"bytes"
+	"mime/multipart"
+	"rest-go/controller/Utils"
+
 	"github.com/gen2brain/go-fitz"
 	"github.com/pdfcpu/pdfcpu/pkg/api"
 	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu"
 	"github.com/pkg/errors"
-	"mime/multipart"
-	"rest-go/controller/Utils"
 )
 
 func ExtractBarCode(file *multipart.FileHeader, password string) (string, error) {

@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/labstack/echo/v4/middleware"
-	"github.com/labstack/echo/v4"
 	"os"
 	"rest-go/controller/Upload"
+
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
