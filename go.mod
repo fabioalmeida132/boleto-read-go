@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/gen2brain/go-fitz v1.20.2
 	github.com/labstack/echo/v4 v4.9.1
+	github.com/otiai10/gosseract/v2 v2.4.1
 	github.com/pdfcpu/pdfcpu v0.3.13
 	github.com/pkg/errors v0.9.1
 	github.com/signintech/gopdf v0.17.1
@@ -18,7 +19,6 @@ require (
 	github.com/labstack/gommon v0.4.0 // indirect
 	github.com/mattn/go-colorable v0.1.11 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
-	github.com/otiai10/gosseract/v2 v2.4.0
 	github.com/phpdave11/gofpdi v1.0.14-0.20211212211723-1f10f9844311 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect

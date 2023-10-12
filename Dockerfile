@@ -2,7 +2,7 @@ FROM ubuntu:latest
 
 
 RUN apt-get update
-RUN apt-get install -y wget git gcc
+RUN apt-get install -y wget git gcc g++
 
 RUN wget -P /tmp "https://dl.google.com/go/go1.19.linux-amd64.tar.gz"
 
@@ -18,6 +18,7 @@ WORKDIR /app
 COPY . ./
 RUN apt-get install -y poppler-utils
 RUN apt-get -y install libzbar-dev
+RUN apt-get install -y tesseract-ocr libtesseract-dev libleptonica-dev
 RUN go mod tidy
 
 RUN go build -o /main

@@ -22,7 +22,7 @@ passando o parametro file com o arquivo pdf que deseja ler, caso o pdf esteja pr
 
 ---
 **Observação:**
-caso queira rodar sem docker, basta seguir o passo a passo do arquivo Dockerfile, realizando as devidas instalações dos pacoetes necessários. 
+caso queira rodar sem docker, basta seguir o passo a passo do arquivo Dockerfile, realizando as devidas instalações dos pacotes necessários. 
 (poppler-utils, libzbar-dev) o nome do pacote pode variar de acordo com o sistema operacional.
 ---
 

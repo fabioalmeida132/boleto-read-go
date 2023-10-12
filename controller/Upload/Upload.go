@@ -11,11 +11,10 @@ import (
 	"log"
 	"net/http"
 	"net/textproto"
-	"regexp"
 	"rest-go/controller/Boleto"
 	"rest-go/controller/OCR"
+	"rest-go/controller/Utils"
 	"rest-go/models"
-	"strconv"
 	"strings"
 
 	"github.com/gen2brain/go-fitz"
@@ -124,16 +123,23 @@ func Upload(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, boleto)
 	}
 
-	// Read boleto
-	typeableLine, err := Boleto.ReadBoleto(file, c.FormValue("password"))
-	if err != nil {
-		boleto.Message = err.Error()
-		return c.JSON(http.StatusBadRequest, boleto)
-	}
+	if len(barCode) == 48 {
+		boleto.TypeableLine = barCode
+		boleto.BarCode = ""
+	} else {
+		boleto.BarCode = barCode
 
-	// Return boleto with barCode
-	boleto.TypeableLine = typeableLine
-	boleto.BarCode = barCode
+		// Read boleto
+		typeableLine, err := Boleto.ReadBoleto(file, c.FormValue("password"))
+		if err != nil {
+			boleto.Message = err.Error()
+			return c.JSON(http.StatusBadRequest, boleto)
+		}
+
+		// Return boleto with barCode
+		boleto.TypeableLine = typeableLine
+
+	}
 
 	var finds []string
 	if boleto.TypeableLine != "" {
@@ -158,75 +164,8 @@ func Upload(c echo.Context) error {
 	return c.JSON(http.StatusOK, boleto)
 }
 
-func prettyNumber(code string) string {
-	re := regexp.MustCompile(`^(\d{5})(\d{5})(\d{5})(\d{6})(\d{5})(\d{6})(\d{1})(\d{14})$`)
-	return re.ReplaceAllString(code, "$1.$2 $3.$4 $5.$6 $7 $8")
-}
-
-func number(code string) string {
-	re := regexp.MustCompile(`[^\d]`)
-	return re.ReplaceAllString(code, "")
-}
-
-func mod10(rawNumber string) string {
-	num := number(rawNumber)
-	sum := 0
-	weight := 2
-	counter := len(num) - 1
-
-	for counter >= 0 {
-		product := getInt(num[counter:counter+1]) * weight
-		if product >= 10 {
-			product = 1 + (product - 10)
-		}
-
-		sum += product
-		if weight == 2 {
-			weight = 1
-		} else {
-			weight = 2
-		}
-
-		counter -= 1
-	}
-
-	digit := 10 - (sum % 10)
-	if digit == 10 {
-		digit = 0
-	}
-
-	return strconv.Itoa(digit)
-}
-
-func mod11(rawNumber string) string {
-	num := number(rawNumber)
-	sum := 0
-	weight := 2
-	base := 9
-	counter := len(num) - 1
-
-	for index := counter; index >= 0; index-- {
-		sum += getInt(num[index:index+1]) * weight
-		if weight < base {
-			weight++
-		} else {
-			weight = 2
-		}
-	}
-
-	digit := 11 - (sum % 11)
-	if digit > 9 {
-		digit = 0
-	}
-	if digit == 0 {
-		digit = 1
-	}
-
-	return strconv.Itoa(digit)
-}
-
 func calcTypeableLine(barcode string) string {
-	barcodeLine := number(barcode)
+	barcodeLine := Utils.Number(barcode)
 
 	if len(barcodeLine) != 44 {
 		return ""
@@ -238,16 +177,11 @@ func calcTypeableLine(barcode string) string {
 	field4 := barcodeLine[4:5]
 	field5 := barcodeLine[5:19]
 
-	if mod11(barcodeLine[0:4]+barcodeLine[5:44]) != field4 {
+	if Utils.Mod11(barcodeLine[0:4]+barcodeLine[5:44]) != field4 {
 		fmt.Println("are not the same")
 	}
 
-	return fmt.Sprint(field1, mod10(field1), field2, mod10(field2), field3, mod10(field3), field4, field5)
-}
-
-func getInt(s string) int {
-	i, _ := strconv.Atoi(s)
-	return i
+	return fmt.Sprint(field1, Utils.Mod10(field1), field2, Utils.Mod10(field2), field3, Utils.Mod10(field3), field4, field5)
 }
 
 // Função para codificar a imagem no formato correto
@@ -260,10 +194,4 @@ func encodeImage(format string, img image.Image, buffer *bytes.Buffer) error {
 	default:
 		return fmt.Errorf("Formato de imagem não suportado: %s", format)
 	}
-}
-
-func imageToBytes(img image.Image) []byte {
-	buf := new(bytes.Buffer)
-	_ = png.Encode(buf, img) // Converte a imagem para o formato PNG (você pode escolher outro formato se preferir)
-	return buf.Bytes()
 }
