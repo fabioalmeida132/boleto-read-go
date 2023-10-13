@@ -123,7 +123,7 @@ func Upload(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, boleto)
 	}
 
-	if len(barCode) == 48 {
+	if len(barCode) >= 47 {
 		boleto.TypeableLine = barCode
 		boleto.BarCode = ""
 	} else {

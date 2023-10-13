@@ -24,8 +24,32 @@ func imageToBytes(img image.Image) []byte {
 }
 
 func extractBarcodeSequence(text string) string {
+	// Remove os caracteres especiais
+	replaced := strings.ReplaceAll(text, ".", " ")
+	replaced = strings.ReplaceAll(replaced, "-", " ")
+
+	// Procura pela primeira sequência
 	r := regexp.MustCompile(`(\d{12}\s\d{12}\s\d{12}\s\d{12})`)
-	match := r.FindString(text)
+	match := r.FindString(replaced)
+
+	// Caso não encontrado, tenta a segunda sequência
+	if match == "" {
+		r = regexp.MustCompile(`(\d{5}\s\d{5}\s\d{5}\s\d{6}\s\d\s\d{20})`)
+		match = r.FindString(replaced)
+	}
+
+	// Caso não encontrado, tenta a terceira sequência
+	if match == "" {
+		r = regexp.MustCompile(`(\d{5}\s\d{5}\s\d{5}\s\d{6}\s\d\s\d{3})`)
+		match = r.FindString(replaced)
+	}
+
+	// Caso não encontrado, tenta a quarta sequência
+	if match == "" {
+		r = regexp.MustCompile(`(\d{5}\s\d{5}\s\d{5}\s\d{6}\s\d{5}\s\d{6}\s\d\s\d{14})`)
+		match = r.FindString(replaced)
+	}
+
 	return match
 }
 
@@ -40,7 +64,6 @@ func GetDataFromImage(image image.Image) (results []string, err error) {
 	defer zImg.Close()
 	scanner.Scan(zImg)
 	symbol := zImg.GetSymbol()
-	// MOD 11 FROM UPLOAD
 
 	for ; symbol != nil; symbol = symbol.Next() {
 		if symbol.Type().t == 25 {
@@ -65,7 +88,7 @@ func GetDataFromImage(image image.Image) (results []string, err error) {
 	typeableLineSequence := extractBarcodeSequence(ocrText)
 	typeableLineSequence = strings.ReplaceAll(typeableLineSequence, " ", "")
 
-	if len(typeableLineSequence) == 48 {
+	if len(typeableLineSequence) == 47 || len(typeableLineSequence) == 48 {
 		return []string{typeableLineSequence}, nil
 	}
 
