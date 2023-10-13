@@ -31,12 +31,15 @@ func Mod11(rawNumber string) string {
 		}
 	}
 
-	digit := 11 - (sum % 11)
-	if digit > 9 {
+	moduloResult := sum % 11
+	var digit int
+	switch {
+	case moduloResult < 2:
 		digit = 0
-	}
-	if digit == 0 {
+	case moduloResult == 10:
 		digit = 1
+	default:
+		digit = 11 - moduloResult
 	}
 
 	return strconv.Itoa(digit)

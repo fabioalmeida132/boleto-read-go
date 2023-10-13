@@ -17,7 +17,7 @@ irá sempre buscar por um código de barras, caso não encontre nenhum dos dois,
 
 - Faça o download do projeto
 - Execute o comando 'docker-compose up -d'
-- Faça uma requisição para o endereço `http://localhost:8080/upload`,
+- Faça uma requisição para o endereço `http://localhost:8081/upload`,
 passando o parametro file com o arquivo pdf que deseja ler, caso o pdf esteja protegido por senha, passe o parametro password com a senha do pdf.
 
 ---

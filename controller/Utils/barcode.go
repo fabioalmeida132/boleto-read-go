@@ -67,10 +67,19 @@ func GetDataFromImage(image image.Image) (results []string, err error) {
 
 	for ; symbol != nil; symbol = symbol.Next() {
 		if symbol.Type().t == 25 {
-			if Mod11(symbol.Data()[0:4]+symbol.Data()[5:44]) != symbol.Data()[4:5] {
+			data := symbol.Data()
+
+			// Caso seja menor que 44 digitos
+			if len(data) < 44 {
 				continue
 			}
-			results = append(results, symbol.Data())
+
+			expectedDigit := Mod11(data[0:4] + data[5:44])
+			actualDigit := data[4:5]
+
+			if expectedDigit == actualDigit {
+				results = append(results, data)
+			}
 		}
 	}
 

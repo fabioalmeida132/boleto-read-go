@@ -71,7 +71,7 @@ func GetBarCode(doc *fitz.Document) (string, error) {
 
 		results, _ := Utils.GetDataFromImage(img)
 		for _, result := range results {
-			if len(result) == 44 || len(result) == 47 || len(results) == 48 {
+			if len(result) == 44 || len(result) == 47 || len(result) == 48 {
 				findCode = result
 				break
 			}
